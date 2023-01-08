@@ -1,0 +1,35 @@
+{
+  "name": "echo",
+  "projectType": "application",
+  "sourceRoot": "go/apps/echo",
+  "targets": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "golangci-lint run",
+        "cwd": "go/apps/echo"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go test ./...",
+        "cwd": "go/apps/echo"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build ../.. -t runner -f echo.Dockerfile",
+        "cwd": "go/apps/echo"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose up --build app",
+        "cwd": "go/apps/echo"
+      }
+    }
+  }
+}

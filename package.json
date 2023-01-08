@@ -9,8 +9,5 @@
     "@nrwl/nx-cloud": "latest",
     "nx": "15.4.5",
     "prettier": "^2.6.2"
-  },
-  "workspaces": [
-    "packages/*"
-  ]
+  }
 }

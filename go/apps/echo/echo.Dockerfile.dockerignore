@@ -1,0 +1,10 @@
+# Dockerfile's context is the directory where go.mod is placed.
+# The file paths must be written based on that directory.
+
+# Ignore everything
+**
+
+!go.mod
+!go.sum
+!apps/echo
+!libs
