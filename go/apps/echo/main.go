@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/kamikazezirou/go/libs/httplog"
+	"github.com/kamikazezirou/nx-monorepo/go/libs/httplog"
 	"log"
 	"net"
 	"net/http"

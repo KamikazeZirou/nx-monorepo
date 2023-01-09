@@ -1,4 +1,4 @@
-module github.com/kamikazezirou/go
+module github.com/kamikazezirou/nx-monorepo/go
 
 go 1.19
 

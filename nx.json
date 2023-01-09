@@ -1,6 +1,13 @@
 {
-  "extends": "nx/presets/npm.json",
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "plugins": ["@nx-kz/go"],
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": false
+    },
+    "@nx-kz/go": {
+      "goModPath": "github.com/kamikazezirou/nx-monorepo"
+    }
+  },
   "namedInputs": {
     "go": [
       "{projectRoot}/**/*.go",
@@ -12,13 +19,9 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e"
-        ]
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
     }
-  }
+  },
+  "extends": "nx/presets/npm.json"
 }
