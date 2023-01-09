@@ -2,7 +2,7 @@
   "version": 2,
   "projects": {
     "echo": "go/apps/echo",
-    "httplog-go": "go/libs/httplog"
+    "httplog": "go/libs/httplog"
   },
   "$schema": "./node_modules/nx/schemas/workspace-schema.json"
 }

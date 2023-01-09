@@ -1,5 +1,5 @@
 {
-  "name": "httplog-go",
+  "name": "httplog",
   "projectType": "library",
   "sourceRoot": "go/libs/httplog",
   "targets": {

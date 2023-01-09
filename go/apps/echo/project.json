@@ -44,5 +44,6 @@
         "cwd": "go/apps/echo"
       }
     }
-  }
+  },
+  "implicitDependencies": ["httplog"]
 }
