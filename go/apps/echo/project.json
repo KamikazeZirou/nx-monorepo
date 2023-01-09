@@ -5,7 +5,7 @@
   "namedInputs": {
     "docker": [
       "{projectRoot}/echo.Dockerfile",
-      "echo.Dockerfile.dockerignore"
+      "{projectRoot}/echo.Dockerfile.dockerignore"
     ]
   },
   "targets": {
@@ -60,8 +60,10 @@
       ],
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker build ../.. -t runner -f echo.Dockerfile",
-        "cwd": "go/apps/echo"
+        "command": "docker build --target runner -t {args.name}:{args.tag} -f echo.Dockerfile ../..",
+        "cwd": "go/apps/echo",
+        "name": "echo",
+        "tag": "latest"
       }
     },
     "serve-img": {
