@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kamikazezirou/go/libs/httplog"
 	"log"
 	"net"
 	"net/http"
@@ -17,7 +18,7 @@ func main() {
 	}
 	addr := net.JoinHostPort("", port)
 
-	http.HandleFunc("/", echoHandler)
+	http.HandleFunc("/", httplog.Log(log.Default(), http.HandlerFunc(echoHandler)))
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal(err)
 	}

@@ -1,0 +1,21 @@
+{
+  "name": "httplog-go",
+  "projectType": "library",
+  "sourceRoot": "go/libs/httplog",
+  "targets": {
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "golangci-lint run",
+        "cwd": "go/libs/httplog"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "go test ./...",
+        "cwd": "go/libs/httplog"
+      }
+    }
+  }
+}
