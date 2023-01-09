@@ -2,8 +2,17 @@
   "name": "echo",
   "projectType": "application",
   "sourceRoot": "go/apps/echo",
+  "namedInputs": {
+    "docker": [
+      "{projectRoot}/echo.Dockerfile",
+      "echo.Dockerfile.dockerignore"
+    ]
+  },
   "targets": {
     "lint": {
+      "inputs": [
+        "go"
+      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "golangci-lint run",
@@ -11,6 +20,10 @@
       }
     },
     "test": {
+      "inputs": [
+        "go",
+        "^go"
+      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "go test ./...",
@@ -18,6 +31,11 @@
       }
     },
     "build": {
+      "inputs": [
+        "go",
+        "^go"
+      ],
+      "outputs": ["{workspaceRoot}/dist/go/apps/echo"],
       "executor": "nx:run-commands",
       "options": {
         "command": "go build -o ../dist/go/apps/echo apps/echo/main.go",
@@ -25,12 +43,21 @@
       }
     },
     "serve": {
+      "inputs": [
+        "go",
+        "^go"
+      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "./dist/go/apps/echo"
       }
     },
     "build-img": {
+      "inputs": [
+        "go",
+        "^go",
+        "docker"
+      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "docker build ../.. -t runner -f echo.Dockerfile",
@@ -38,6 +65,12 @@
       }
     },
     "serve-img": {
+      "inputs": [
+        "go",
+        "^go",
+        "docker",
+        "{projectRoot}/docker-compose.yml"
+      ],
       "executor": "nx:run-commands",
       "options": {
         "command": "docker compose up app",
@@ -45,5 +78,7 @@
       }
     }
   },
-  "implicitDependencies": ["httplog"]
+  "implicitDependencies": [
+    "httplog"
+  ]
 }

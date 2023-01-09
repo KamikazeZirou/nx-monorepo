@@ -1,6 +1,12 @@
 {
   "extends": "nx/presets/npm.json",
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "go": [
+      "{projectRoot}/**/*.go",
+      "{workspaceRoot}/go/go.mod"
+    ]
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
