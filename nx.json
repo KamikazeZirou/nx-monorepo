@@ -4,7 +4,8 @@
   "namedInputs": {
     "go": [
       "{projectRoot}/**/*.go",
-      "{workspaceRoot}/go/go.mod"
+      "{workspaceRoot}/go/go.mod",
+      "{workspaceRoot}/go/go.sum"
     ]
   },
   "tasksRunnerOptions": {
