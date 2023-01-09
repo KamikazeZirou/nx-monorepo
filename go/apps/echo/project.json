@@ -20,14 +20,27 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker build ../.. -t runner -f echo.Dockerfile",
-        "cwd": "go/apps/echo"
+        "command": "go build -o ../dist/go/apps/echo apps/echo/main.go",
+        "cwd": "go"
       }
     },
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker compose up --build app",
+        "command": "./dist/go/apps/echo"
+      }
+    },
+    "build-img": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker build ../.. -t runner -f echo.Dockerfile",
+        "cwd": "go/apps/echo"
+      }
+    },
+    "serve-img": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "docker compose up app",
         "cwd": "go/apps/echo"
       }
     }
