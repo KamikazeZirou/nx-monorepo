@@ -35,21 +35,20 @@
         "go",
         "^go"
       ],
-      "outputs": ["{workspaceRoot}/dist/go/apps/echo"],
+      "outputs": [
+        "{workspaceRoot}/dist/go/apps/echo/main"
+      ],
       "executor": "nx:run-commands",
       "options": {
-        "command": "go build -o ../dist/go/apps/echo apps/echo/main.go",
+        "command": "go build -o ../dist/go/apps/echo/main apps/echo/main.go",
         "cwd": "go"
       }
     },
     "serve": {
-      "inputs": [
-        "go",
-        "^go"
-      ],
+      "dependsOn": "build",
       "executor": "nx:run-commands",
       "options": {
-        "command": "./dist/go/apps/echo"
+        "command": "./dist/go/apps/echo/main"
       }
     },
     "build-img": {
@@ -60,10 +59,9 @@
       ],
       "executor": "nx:run-commands",
       "options": {
-        "command": "docker build --target runner -t {args.name}:{args.tag} -f echo.Dockerfile ../..",
+        "command": "docker build --target runner -t echo:{args.imgTag} -f echo.Dockerfile ../..",
         "cwd": "go/apps/echo",
-        "name": "echo",
-        "tag": "latest"
+        "imgTag": "latest"
       }
     },
     "serve-img": {
@@ -76,6 +74,48 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "docker compose up app",
+        "cwd": "go/apps/echo"
+      }
+    },
+    "deploy-img": {
+      "inputs": [
+        "go",
+        "^go",
+        "docker",
+        "{projectRoot}/trivy.yml"
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/go/apps/echo/imgTag.txt"
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker build --target runner -t echo:{args.imgTag} -f echo.Dockerfile ../..",
+          "trivy image -c tirvy.yml echo:{args.imgTag}",
+          "dockle -ae pem --exit-code 1 --host unix:///var/run/docker.sock echo:{args.imgTag}",
+          "echo docker push echo:{args.imgTag}",
+          "mkdir -p ../../../dist/go/apps/echo",
+          "echo {args.imgTag} > ../../../dist/go/apps/echo/imgTag.txt"
+        ],
+        "parallel": false,
+        "cwd": "go/apps/echo",
+        "imgTag": "${GITHUB_SHA:-latest}"
+      }
+    },
+    "deploy": {
+      "inputs": [
+        "{workspaceRoot}/dist/go/apps/echo/imgTag.txt"
+      ],
+      "dependsOn": [
+        {
+          "target": "deploy-img",
+          "projects": "self",
+          "params": "forward"
+        }
+      ],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo deploy `cat ../../../dist/go/apps/echo/imgTag.txt`",
         "cwd": "go/apps/echo"
       }
     }
