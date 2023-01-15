@@ -10,9 +10,7 @@
   },
   "targets": {
     "lint": {
-      "inputs": [
-        "go"
-      ],
+      "inputs": ["go", "go-lint"],
       "executor": "nx:run-commands",
       "options": {
         "command": "golangci-lint run",
@@ -20,10 +18,7 @@
       }
     },
     "test": {
-      "inputs": [
-        "go",
-        "^go"
-      ],
+      "inputs": ["go", "^go"],
       "executor": "nx:run-commands",
       "options": {
         "command": "go test ./...",
@@ -31,13 +26,8 @@
       }
     },
     "build": {
-      "inputs": [
-        "go",
-        "^go"
-      ],
-      "outputs": [
-        "{workspaceRoot}/dist/go/apps/echo/main"
-      ],
+      "inputs": ["go", "^go"],
+      "outputs": ["{workspaceRoot}/dist/go/apps/echo/main"],
       "executor": "nx:run-commands",
       "options": {
         "command": "go build -o ../dist/go/apps/echo/main apps/echo/main.go",
@@ -52,11 +42,7 @@
       }
     },
     "build-img": {
-      "inputs": [
-        "go",
-        "^go",
-        "docker"
-      ],
+      "inputs": ["go", "^go", "docker"],
       "executor": "nx:run-commands",
       "options": {
         "command": "docker build --target runner -t echo:{args.imgTag} -f echo.Dockerfile ../..",
@@ -65,12 +51,7 @@
       }
     },
     "serve-img": {
-      "inputs": [
-        "go",
-        "^go",
-        "docker",
-        "{projectRoot}/docker-compose.yml"
-      ],
+      "inputs": ["go", "^go", "docker", "{projectRoot}/docker-compose.yml"],
       "executor": "nx:run-commands",
       "options": {
         "command": "docker compose up app",
@@ -78,15 +59,8 @@
       }
     },
     "deploy-img": {
-      "inputs": [
-        "go",
-        "^go",
-        "docker",
-        "{projectRoot}/trivy.yml"
-      ],
-      "outputs": [
-        "{workspaceRoot}/dist/go/apps/echo/imgTag.txt"
-      ],
+      "inputs": ["go", "^go", "docker", "{projectRoot}/trivy.yml"],
+      "outputs": ["{workspaceRoot}/dist/go/apps/echo/imgTag.txt"],
       "executor": "nx:run-commands",
       "options": {
         "commands": [
@@ -103,9 +77,7 @@
       }
     },
     "deploy": {
-      "inputs": [
-        "{workspaceRoot}/dist/go/apps/echo/imgTag.txt"
-      ],
+      "inputs": ["{workspaceRoot}/dist/go/apps/echo/imgTag.txt"],
       "dependsOn": [
         {
           "target": "deploy-img",
