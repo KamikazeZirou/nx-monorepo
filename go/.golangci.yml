@@ -2,6 +2,7 @@ run:
   tests: false
   allow-parallel-runners: true
 
+# 1
 linters:
   disable-all: true
   # Enabling all of them is too strict, so only codes that are likely to cause problems should be detected.
