@@ -1,0 +1,31 @@
+name: 'trivy'
+description: 'setup trivy'
+inputs:
+  version:
+    description: 'the version of trivy. e.g. 0.36.1'
+    required: false
+    default: 'latest'
+  path:
+    description: 'the path to save the binary of trivy'
+    required: false
+    default: '~/.local/bin'
+runs:
+  using: 'composite'
+  steps:
+    - name: Detect the version of trivy
+      id: trivy-version
+      uses: ./.github/actions/detect-version
+      with:
+        name: aquasecurity/trivy
+        version: ${{ inputs.version }}
+    - name: Cache trivy
+      id: trivy-cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.path }}/trivy
+        key: trivy-${{ steps.trivy-version.outputs.version }}
+    - name: Install trivy
+      if: steps.trivy-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b ${{ inputs.path }} v${{ steps.trivy-version.outputs.version }}
