@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  main:
+    name: Nx Cloud - Main Job
+    uses: nrwl/ci/.github/workflows/nx-cloud-main.yml@v0.11.2
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    with:
+      parallel-commands: |
+        yarn nx-cloud record -- yarn nx workspace-lint
+        yarn nx-cloud record -- yarn nx format:check
+      parallel-commands-on-agents: |
+        yarn nx affected --target=lint --parallel=2
+        yarn nx affected --target=test --parallel=2
+        NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn nx affected --target=deploy --parallel=2
+      install-commands: |
+        yarn install --immutable 
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin v1.50.1
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3
+        VERSION=$(
+            curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+            grep '"tag_name":' | \
+            sed -E 's/.*"v([^"]+)".*/\1/'
+        )
+        wget https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.tar.gz
+        tar zxvf dockle_${VERSION}_Linux-64bit.tar.gz
+        mv dockle /usr/local/bin
+
+  agents:
+    name: Nx Cloud - Agents
+    uses: nrwl/ci/.github/workflows/nx-cloud-agents.yml@v0.11.2
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    with:
+      number-of-agents: 2
+      install-commands: |
+        yarn install --immutable 
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin v1.50.1
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3
+        VERSION=$(
+            curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | \
+            grep '"tag_name":' | \
+            sed -E 's/.*"v([^"]+)".*/\1/'
+        )
+        wget https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.tar.gz
+        tar zxvf dockle_${VERSION}_Linux-64bit.tar.gz
+        mv dockle /usr/local/bin

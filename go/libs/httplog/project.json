@@ -4,9 +4,7 @@
   "sourceRoot": "go/libs/httplog",
   "targets": {
     "lint": {
-      "inputs": [
-        "go"
-      ],
+      "inputs": ["go", "go-lint"],
       "executor": "nx:run-commands",
       "options": {
         "command": "golangci-lint run",
@@ -14,10 +12,7 @@
       }
     },
     "test": {
-      "inputs": [
-        "go",
-        "^go"
-      ],
+      "inputs": ["go", "^go"],
       "executor": "nx:run-commands",
       "options": {
         "command": "go test ./...",

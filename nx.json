@@ -13,7 +13,8 @@
       "{projectRoot}/**/*.go",
       "{workspaceRoot}/go/go.mod",
       "{workspaceRoot}/go/go.sum"
-    ]
+    ],
+    "go-lint": ["{workspaceRoot}/go/.golangci.yml"]
   },
   "tasksRunnerOptions": {
     "default": {
