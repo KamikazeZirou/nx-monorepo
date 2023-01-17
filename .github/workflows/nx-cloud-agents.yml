@@ -126,6 +126,17 @@ jobs:
               appendFileSync(process.env.GITHUB_ENV, `${v.name}=${parseStr(v.value)}\n`);
             }
 
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.x'
+          cache: true
+          cache-dependency-path: ./go/go.sum
+
+      - name: Download go mods
+        run: |
+          go mod download
+        working-directory: go
+
       - name: Install dependencies
         run: |
           yarn install --immutable
