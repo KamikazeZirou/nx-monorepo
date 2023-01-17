@@ -1,0 +1,31 @@
+name: 'detect-version'
+description: 'detect the version from GitHub'
+inputs:
+  name:
+    description: 'the name of library. e.g. golangci/golangci-lint'
+    required: true
+  version:
+    description: 'the version of library. e.g. 1.50.1'
+    required: false
+    default: 'latest'
+outputs:
+  version:
+    description: 'the version of library. e.g. 1.50.1'
+    value: ${{ steps.detect-version.outputs.version }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Detect the version from GitHub
+      id: detect-version
+      shell: bash
+      run: |
+        if [ "${{ inputs.version }}" == "latest" ]; then
+          VERSION=$(
+            curl --silent "https://api.github.com/repos/${{ inputs.name }}/releases/latest" | \
+            grep '"tag_name":' | \
+            sed -E 's/.*"v([^"]+)".*/\1/'
+          )
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        else
+          echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+        fi

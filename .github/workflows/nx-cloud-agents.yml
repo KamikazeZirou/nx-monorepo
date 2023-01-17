@@ -1,0 +1,161 @@
+name: Nx Cloud Agents
+
+on:
+  workflow_call:
+    secrets:
+      NPM_TOKEN:
+        required: false
+      NX_CLOUD_ACCESS_TOKEN:
+        required: false
+      NX_CLOUD_AUTH_TOKEN:
+        required: false
+    inputs:
+      number-of-agents:
+        required: true
+        type: number
+      environment-variables:
+        required: false
+        type: string
+      node-version:
+        required: false
+        type: string
+      runs-on:
+        required: false
+        type: string
+        default: ubuntu-latest
+      # We needed this input in order to be able to configure out integration tests for this repo, it is not documented
+      # so as to not cause confusion/add noise, but technically any consumer of the workflow can use it if they want to.
+      working-directory:
+        required: false
+        type: string
+
+env:
+  NX_CLOUD_DISTRIBUTED_EXECUTION: true
+  NX_BRANCH: ${{ github.event.number || github.ref_name }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+jobs:
+  set-agents:
+    runs-on: ${{ inputs.runs-on }}
+    name: Init
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        shell: bash
+        # Turn the number-of-agents input into a JSON structure which is compatible with a Github job matrix strategy
+        run: |
+          AGENTS_JSON_ARRAY=$(node -e "console.log(JSON.stringify(Array.from(new Array(${{ inputs.number-of-agents }})).map((_, i) => i + 1)));")
+          echo $AGENTS_JSON_ARRAY
+          echo "matrix=$AGENTS_JSON_ARRAY" >> $GITHUB_OUTPUT
+  # Intentionally using capital letter in order to make the Github UI for the matrix look better
+  Run:
+    needs: set-agents
+    runs-on: ${{ inputs.runs-on }}
+    name: Agent ${{ matrix.agent }}
+    strategy:
+      matrix:
+        agent:
+          - ${{fromJson(needs.set-agents.outputs.matrix)}}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory || github.workspace }}
+        # Specify shell to help normalize across different operating systems
+        shell: bash
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set node versions using volta, with optional overrides provided by the consumer
+      - uses: volta-cli/action@v4
+        with:
+          node-version: '${{ inputs.node-version }}'
+
+      - name: Print node/yarn versions
+        id: versions
+        run: |
+          node_ver=$( node --version )
+          yarn_ver=$( yarn --version || true )
+          echo "Node: ${node_ver:1}"
+          if [[ $yarn_ver != '' ]]; then echo "Yarn: $yarn_ver"; fi
+          echo "node_version=${node_ver:1}" >> $GITHUB_OUTPUT
+      - name: Get yarn cache directory path [yarn 1.x]
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+      - name: Use the node_modules cache if available [yarn 1.x]
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ steps.versions.outputs.node_version }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ steps.versions.outputs.node_version }}-yarn-
+      - name: Process environment-variables
+        if: ${{ inputs.environment-variables != '' }}
+        uses: actions/github-script@v6
+        env:
+          ENV_VARS: ${{ inputs.environment-variables }}
+        with:
+          script: |
+            const { appendFileSync } = require('fs');
+            // trim spaces and escape quotes
+            const cleanStr = str => str
+              .trim()
+              .replaceAll(/`/g, "\`");
+            // parse variable to correct type
+            const parseStr = str =>
+              str === 'true' || str === 'TRUE'
+                ? true
+                : str === 'false' || str === 'FALSE'
+                  ? false
+                  : isNaN(str)
+                    ? str
+                    : parseFloat(str);
+            const varsStr = process.env.ENV_VARS || '';
+            const vars = varsStr
+              .split('\n')
+              .map(variable => variable.trim())
+              .filter(variable => variable.indexOf('=') > 0)
+              .map(variable => ({
+                name: cleanStr(variable.split('=')[0]),
+                value: cleanStr(variable.slice(variable.indexOf('=') + 1))
+              }));
+            for (const v of vars) {
+              console.log(`Appending environment variable \`${v.name}\` with value \`${v.value}\` to ${process.env.GITHUB_ENV}`);
+              appendFileSync(process.env.GITHUB_ENV, `${v.name}=${parseStr(v.value)}\n`);
+            }
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19.x'
+          cache: true
+          cache-dependency-path: ./go/go.sum
+
+      - name: Download go mods
+        run: |
+          go mod download
+        working-directory: go
+
+      - name: Install dependencies
+        run: |
+          yarn install --immutable
+
+      - name: Add tools path
+        run: |
+          mkdir -p "~/.local/bin"
+          echo "~/.local/bin" >> $GITHUB_PATH
+
+      - name: Install golangci-lint
+        uses: ./.github/actions/golangci-lint
+
+      - name: Install trivy
+        uses: ./.github/actions/trivy
+
+      - name: Install dockle
+        uses: ./.github/actions/dockle
+
+      - name: Start Nx Agent ${{ matrix.agent }}
+        run: npx nx-cloud start-agent
+        env:
+          NX_AGENT_NAME: ${{matrix.agent}}
