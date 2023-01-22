@@ -1,21 +1,4 @@
 {
-  "plugins": ["@nx-kz/go"],
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": false
-    },
-    "@nx-kz/go": {
-      "goModPath": "github.com/kamikazezirou/nx-monorepo"
-    }
-  },
-  "namedInputs": {
-    "go": [
-      "{projectRoot}/**/*.go",
-      "{workspaceRoot}/go/go.mod",
-      "{workspaceRoot}/go/go.sum"
-    ],
-    "go-lint": ["{workspaceRoot}/go/.golangci.yml"]
-  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
@@ -24,5 +7,38 @@
       }
     }
   },
-  "extends": "nx/presets/npm.json"
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": false
+    },
+    "@nx-kz/go": {
+      "goModPath": "github.com/kamikazezirou/nx-monorepo"
+    }
+  },
+  "plugins": ["@nx-kz/go"],
+  "namedInputs": {
+    "go": [
+      "{projectRoot}/**/*.go",
+      "{workspaceRoot}/go/go.mod",
+      "{workspaceRoot}/go/go.sum"
+    ],
+    "go-lint": ["{workspaceRoot}/go/.golangci.yml"]
+  },
+  "targetDependencies": {
+    "version": [
+      {
+        "target": "version",
+        "projects": "dependencies"
+      }
+    ]
+  },
+  "extends": "nx/presets/npm.json",
+  "targetDefaults": {
+    "lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
+    },
+    "test": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    }
+  }
 }

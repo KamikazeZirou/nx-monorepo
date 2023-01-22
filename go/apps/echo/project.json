@@ -90,6 +90,26 @@
         "command": "echo deploy `cat ../../../dist/go/apps/echo/imgTag.txt`",
         "cwd": "go/apps/echo"
       }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "postTargets": ["echo:github2"],
+        "tagPrefix": "go/apps/echo/v",
+        "skipProjectChangelog": false,
+        "skipCommit": true,
+        "trackDeps": true
+      }
+    },
+    "github": {
+      "executor": "release:github",
+      "options": {
+        "tag": "${tag}",
+        "target": "main",
+        "title": "${tag}",
+        "notes": "${notes}",
+        "draft": true
+      }
     }
   }
 }
