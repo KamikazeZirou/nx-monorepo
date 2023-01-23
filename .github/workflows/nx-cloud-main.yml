@@ -9,6 +9,8 @@ on:
         required: false
       NX_CLOUD_AUTH_TOKEN:
         required: false
+      GH_TOKEN:
+        required: false
     inputs:
       number-of-agents:
         required: false
@@ -60,6 +62,7 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
 jobs:
   main:
@@ -182,6 +185,11 @@ jobs:
 
       - name: Install dockle
         uses: ./.github/actions/dockle
+
+      - name: Git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
 
       # An unfortunate side-effect of the way reusable workflows work is that by the time they are pulled into the "caller"
       # repo, they are effectively completely embedded in that context. This means that we cannot reference any files which

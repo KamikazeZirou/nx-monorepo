@@ -94,7 +94,7 @@
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
-        "postTargets": ["echo:github2"],
+        "postTargets": ["echo:github"],
         "tagPrefix": "go/apps/echo/v",
         "skipProjectChangelog": false,
         "skipCommit": true,

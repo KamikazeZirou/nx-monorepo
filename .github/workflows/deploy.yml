@@ -11,10 +11,11 @@ concurrency:
 
 jobs:
   check:
-    name: Nx Cloud - Main Job
+    name: Check Main
     uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
       parallel-commands: |
         yarn nx-cloud record -- yarn nx workspace-lint
@@ -22,10 +23,11 @@ jobs:
       parallel-commands-on-agents: |
         yarn nx affected --target=lint --parallel=2
         yarn nx affected --target=test --parallel=2
-        yarn nx affected --target=version --parallel=2
+        yarn nx affected --target=deploy-img --parallel=2
+        NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn nx affected --target=version --parallel=2
 
   check-agents:
-    name: Nx Cloud - Agents
+    name: Check Agent
     uses: ./.github/workflows/nx-cloud-agents.yml
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -34,20 +36,21 @@ jobs:
       number-of-agents: 2
 
   deploy:
-    name: Nx Cloud - Main Job
+    name: Deploy Main
     needs: check
     uses: ./.github/workflows/nx-cloud-main.yml
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     with:
       parallel-commands-on-agents: |
-        yarn nx affected --target=deploy --parallel=2
+        NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn nx affected --target=deploy --parallel=2
 
   deploy-agents:
-    name: Nx Cloud - Agents
+    name: Deploy Agent
     needs: check
     uses: ./.github/workflows/nx-cloud-agents.yml
     secrets:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     with:
       number-of-agents: 2
