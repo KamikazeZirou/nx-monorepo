@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "version": 2,
+  "cli": "nx",
+  "title": "Github executor",
+  "description": "",
+  "type": "object",
+  "properties": {
+    "draft": {
+      "type": "boolean",
+      "description": "Save the release as a draft instead of publishing it"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Release notes."
+    },
+    "tag": {
+      "type": "string",
+      "description": "Create a new release from given tag."
+    },
+    "target": {
+      "type": "string",
+      "description": "Target branch or full commit SHA (default: main branch)."
+    },
+    "title": {
+      "type": "string",
+      "description": "Release title"
+    }
+  },
+  "required": ["tag"]
+}

@@ -18,6 +18,25 @@
         "command": "go test ./...",
         "cwd": "go/libs/httplog"
       }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "postTargets": ["httplog:github"],
+        "tagPrefix": "go/libs/httplog/v",
+        "skipProjectChangelog": false,
+        "skipCommit": true,
+        "trackDeps": true
+      }
+    },
+    "github": {
+      "executor": "release:github",
+      "options": {
+        "tag": "${tag}",
+        "target": "main",
+        "title": "${tag}",
+        "notes": "${notes}"
+      }
     }
   }
 }
