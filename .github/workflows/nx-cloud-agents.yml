@@ -151,12 +151,18 @@ jobs:
 
       - name: Install golangci-lint
         uses: ./.github/actions/golangci-lint
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install trivy
         uses: ./.github/actions/trivy
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dockle
         uses: ./.github/actions/dockle
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Git config
         run: |

@@ -9,6 +9,9 @@ inputs:
     description: 'the path to save the binary of dockle'
     required: false
     default: '~/.local/bin'
+  token:
+    description: 'the github token to use GitHub API'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -18,12 +21,13 @@ runs:
       with:
         name: goodwithtech/dockle
         version: ${{ inputs.version }}
+        token: ${{ inputs.token }}
     - name: Cache dockle
       id: dockle-cache
       uses: actions/cache@v3
       with:
         path: ${{ inputs.path }}/dockle
-        key: dockle-${{ steps.dockle-version.outputs.version }}
+        key: dockle-${{ runner.os }}-${{ runner.arch }}-${{ steps.dockle-version.outputs.version }}
     - name: Install dockle
       if: steps.dockle-cache.outputs.cache-hit != 'true'
       shell: bash

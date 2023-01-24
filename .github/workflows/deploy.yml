@@ -23,7 +23,6 @@ jobs:
       parallel-commands-on-agents: |
         yarn nx affected --target=lint --parallel=2
         yarn nx affected --target=test --parallel=2
-        yarn nx affected --target=deploy-img --parallel=2
         NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn nx affected --target=version --parallel=2
 
   check-agents:
@@ -43,7 +42,7 @@ jobs:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     with:
       parallel-commands-on-agents: |
-        NX_CLOUD_DISTRIBUTED_EXECUTION=false yarn nx affected --target=deploy --parallel=2
+        yarn nx affected --target=deploy --parallel=2
 
   deploy-agents:
     name: Deploy Agent

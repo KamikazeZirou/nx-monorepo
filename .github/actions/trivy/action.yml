@@ -9,6 +9,9 @@ inputs:
     description: 'the path to save the binary of trivy'
     required: false
     default: '~/.local/bin'
+  token:
+    description: 'the github token to use GitHub API'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -18,14 +21,15 @@ runs:
       with:
         name: aquasecurity/trivy
         version: ${{ inputs.version }}
+        token: ${{ inputs.token }}
     - name: Cache trivy
       id: trivy-cache
       uses: actions/cache@v3
       with:
         path: ${{ inputs.path }}/trivy
-        key: trivy-${{ steps.trivy-version.outputs.version }}
+        key: trivy-${{ runner.os }}-${{ runner.arch }}-${{ steps.trivy-version.outputs.version }}
     - name: Install trivy
       if: steps.trivy-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b ${{ inputs.path }} v${{ steps.trivy-version.outputs.version }}
+        curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b ${{ inputs.path }} v${{ steps.trivy-version.outputs.version }}
