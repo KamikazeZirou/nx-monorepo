@@ -9,6 +9,9 @@ inputs:
     description: 'the path to save the binary of golangci-lint'
     required: false
     default: '~/.local/bin'
+  token:
+    description: 'the github token to use GitHub API'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -18,6 +21,7 @@ runs:
       with:
         name: golangci/golangci-lint
         version: ${{ inputs.version }}
+        token: ${{ inputs.token }}
     - name: Cache golangci-lint
       id: golangci-lint-cache
       uses: actions/cache@v3

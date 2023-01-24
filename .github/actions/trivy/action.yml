@@ -9,6 +9,9 @@ inputs:
     description: 'the path to save the binary of trivy'
     required: false
     default: '~/.local/bin'
+  token:
+    description: 'the github token to use GitHub API'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -18,6 +21,7 @@ runs:
       with:
         name: aquasecurity/trivy
         version: ${{ inputs.version }}
+        token: ${{ inputs.token }}
     - name: Cache trivy
       id: trivy-cache
       uses: actions/cache@v3
