@@ -21,7 +21,7 @@ runs:
       run: |
         if [ "${{ inputs.version }}" == "latest" ]; then
           VERSION=$(
-            curl --retry 2 --silent "https://api.github.com/repos/${{ inputs.name }}/releases/latest" | \
+            curl --retry 2 -Ss "https://api.github.com/repos/${{ inputs.name }}/releases/latest" | \
             grep '"tag_name":' | \
             sed -E 's/.*"v([^"]+)".*/\1/'
           )

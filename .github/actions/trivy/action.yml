@@ -28,4 +28,4 @@ runs:
       if: steps.trivy-cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b ${{ inputs.path }} v${{ steps.trivy-version.outputs.version }}
+        curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b ${{ inputs.path }} v${{ steps.trivy-version.outputs.version }}
