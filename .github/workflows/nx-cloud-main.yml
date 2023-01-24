@@ -172,26 +172,6 @@ jobs:
         run: |
           yarn install --immutable
 
-      - name: Add tools path
-        run: |
-          mkdir -p "~/.local/bin"
-          echo "~/.local/bin" >> $GITHUB_PATH
-
-      - name: Install golangci-lint
-        uses: ./.github/actions/golangci-lint
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install trivy
-        uses: ./.github/actions/trivy
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Install dockle
-        uses: ./.github/actions/dockle
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Git config
         run: |
           git config user.name "GitHub Actions Bot"
