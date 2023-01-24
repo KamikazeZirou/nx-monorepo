@@ -23,7 +23,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ inputs.path }}/trivy
-        key: trivy-${{ steps.trivy-version.outputs.version }}
+        key: trivy-${{ runner.os }}-${{ runner.arch }}-${{ steps.trivy-version.outputs.version }}
     - name: Install trivy
       if: steps.trivy-cache.outputs.cache-hit != 'true'
       shell: bash

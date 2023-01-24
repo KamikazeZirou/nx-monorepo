@@ -23,7 +23,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: ${{ inputs.path }}/dockle
-        key: dockle-${{ steps.dockle-version.outputs.version }}
+        key: dockle-${{ runner.os }}-${{ runner.arch }}-${{ steps.dockle-version.outputs.version }}
     - name: Install dockle
       if: steps.dockle-cache.outputs.cache-hit != 'true'
       shell: bash
